@@ -6,7 +6,7 @@ var http = require('http')
   , express = require('express');
  
 var app
-  , port = argv.port || 3001;
+  , port = argv.port || 4000;
 
 // detect env
 
