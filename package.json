@@ -1,0 +1,19 @@
+{
+  "name": "mvtapi",
+  "description": "MVT API",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "app.js"
+  },
+  "subdomain": "mvtapi",
+  "dependencies": {
+    "express": "3.0.3",
+    "optimist": "0.5",
+    "mongodb": "1.2"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": "0.8.x"
+  }
+}
