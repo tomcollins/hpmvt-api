@@ -2,6 +2,7 @@ function init(app) {
 
   var CollectionProvider = require('../lib/collectionprovider').CollectionProvider;
   var experimentProvider= new CollectionProvider('experiments', 'localhost', 27017);
+  var statProvider= new CollectionProvider('stats', 'localhost', 27017);
 
   app.get('/experiments', function(req, res){
     experimentProvider.findAll( function(err, result){
@@ -14,7 +15,11 @@ function init(app) {
   });
 
   app.get('/experiments/project/:id', function(req, res){
-    experimentProvider.findByObject({project: req.params.id}, function(err, result){
+    var options = {project: req.params.id};
+    if (req.query.enabled) {
+      options.enabled = req.query.enabled;
+    }
+    experimentProvider.findByObject(options, function(err, result){
       if (!err) {
         return res.send(result);
       } else {
@@ -43,7 +48,14 @@ function init(app) {
       } else if (null === result) {
         res.send('Not Found', 404);
       } else {
-        return res.send(result);
+        statProvider.findByObject({experiment: req.params.id}, function(err, stats){
+          if (!err) {
+            result.stats = stats; 
+            return res.send(result);
+          } else {
+            return console.log(err);
+          }
+        });
       }
     });
   });

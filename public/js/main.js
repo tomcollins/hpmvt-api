@@ -20,17 +20,25 @@ $(document).ready(function(){
     });
   };
 
+  function showAlert(message, messageClass) {
+    $('body').append('<p class="alert ' +messageClass +'">' +message +'</p>');
+    setTimeout(function(){
+      $('p.alert').fadeOut(1000, function(){
+        $('p.alert').remove();
+      });
+    }, 2000);
+  }
+
   function showExperiments(experiments) {
-    console.log('experiments', experiments);
     var uri
       , html = '<h2>Experiments:</h2>';
-    html += '<p><a href="" id="experiment-add">Add new experiment</a></p>';
-    html += '<table id="experiments"><tr><th>Project</th><th>Name</th></tr>';
+    html += '<p><a href="#" id="experiment-add">Add new experiment</a></p>';
+    html += '<table id="experiments" cellpadding="0" cellspacing="0"><tr><th>Project</th><th>Name</th></tr>';
     experiments.forEach(function(experiment){
       uri = '/experiments/' +experiment._id;
       html += '<tr>';
       html += '<td>' +experiment.project +'</td>';
-      html += '<td><a href="' +uri +'">' +experiment.name +'</a></td>';
+      html += '<td><a href="#experiments/' +experiment._id +'">' +experiment.name +'</a></td>';
       html += '</tr>';
     });
     html += '</table>';
@@ -40,14 +48,14 @@ $(document).ready(function(){
   }
 
   function experimentClick(e) {
-    e.preventDefault();
-    var id = $(e.target).attr('href').split('/')[2];
+    //e.preventDefault();
+    var id = $(e.target).attr('href').substr(1).split('/')[1];
     $('#experiments').off('click', experimentClick);
     getExperiment(id, showExperiment);
   }
 
   function experimentAddClick(e) {
-    e.preventDefault();
+    //e.preventDefault();
     experiment = {
       project: "homepage",
       name: "Add name",
@@ -67,7 +75,6 @@ $(document).ready(function(){
     var html = '<a id="show-experiments" href="#">Back to experiment list</a>';
     html += '<div id="experiment">';
     html += '<h2>Add new experiment</h2>';
-    html += '<div id="experiment-message"/>';
     html += '<form id="experiment-edit"><textarea wrap="off" rows="15" cols="80">' +JSON.stringify(experiment, null, 4) +'</textarea><input style="display: block;clear: both" type="submit"/></form>';
     $('#main').html(html);
     $('#show-experiments').on('click', showExperimentsClick);
@@ -75,15 +82,14 @@ $(document).ready(function(){
   }
 
   function saveExperiment(e) {
-    var data = $('#experiment-edit textarea').val();
     e.preventDefault();
+    var data = $('#experiment-edit textarea').val();
     try {
       data = JSON.parse(data)
     } catch(e) {
-      $('#experiment-message').html('<p style="color:red">Invalid JSON.</p>');
+      showAlert('Invalid JSON', 'error');
       return;
     }
-    console.log('data', data);
     $.ajax({
       url: '/experiments',
       type: 'POST',
@@ -91,17 +97,56 @@ $(document).ready(function(){
       contentType: 'application/json',
       data: JSON.stringify(data),
       complete: function() {
-        $('#experiment-message').html('<p style="color:green">Saved.</p>');
+        showAlert('Saved', 'success');
         showExperiment(data);
       }
     });
   };
 
   function showExperiment(experiment) {
+    var view = [], click = [], variants = { v1: {view:0, click: 0}, v2: {view:0, click: 0}};
+
+    experiment.stats.forEach(function(experiment){
+      if ('view' == experiment.type) {
+        view.push(experiment);
+      } else if ('click' == experiment.type) {
+        click.push(experiment);
+      }
+      variants[experiment.variant][experiment.type]++;
+    });
+
     var html = '<a id="show-experiments" href="#">Back to experiment list</a>';
     html += '<div id="experiment">';
     html += '<h2>' +experiment.name +'</h2>';
-    html += '<div id="experiment-message"/>';
+    html += '<p>Type:' +experiment.type +'</p>';
+
+    html += '<h3>Variants</h3>';
+    html += '<table id="variants" cellpadding="0" cellspacing="0"><tr><th>Key</th><th>Value</th><th>Views</th><th>Clicks</th></tr>';
+    for (var key in experiment.values) {
+      html += '<tr>';
+      html += '<td>' +key +'</td>';
+      html += '<td>' +experiment.values[key] +'</td>';
+      html += '<td>' +variants[key].view  +'</td>';
+      html += '<td>' +variants[key].click +'</td>';
+      html += '</tr>';
+    };
+    html += '</table>';
+
+    html += '<h3>Views: ' +view.length +'</h3>';
+    html += '<ul>';
+    view.forEach(function(view){
+      html += '<li>' +view.variant +' - ' +view.created_at +'</li>';
+    });
+    html += '</ul>';
+    html += '<h3>Clicks: ' +click.length +'</h3>';
+    html += '<ul>';
+    click.forEach(function(click){
+      html += '<li>' +click.variant +' - ' +click.created_at +'</li>';
+    });
+    html += '</ul>';
+
+    delete experiment.stats;
+    html += '<h3>Edit config:</h3>';
     html += '<form id="experiment-edit"><textarea wrap="off" rows="15" cols="80">' +JSON.stringify(experiment, null, 4) +'</textarea><input style="display: block;clear: both" type="submit"/></form>';
     $('#main').html(html);
     $('#show-experiments').on('click', showExperimentsClick);
@@ -109,15 +154,14 @@ $(document).ready(function(){
   }
 
   function updateExperiment(e) {
-    var data = $('#experiment-edit textarea').val();
     e.preventDefault();
+    var data = $('#experiment-edit textarea').val();
     try {
       data = JSON.parse(data)
     } catch(e) {
-      $('#experiment-message').html('<p style="color:red">Invalid JSON.</p>');
+      showAlert('Invalid JSON', 'error');
       return;
     }
-    console.log('data', data);
     $.ajax({
       url: '/experiments/' +data._id,
       type: 'PUT',
@@ -125,17 +169,24 @@ $(document).ready(function(){
       contentType: 'application/json',
       data: JSON.stringify(data),
       complete: function() {
-        $('#experiment-message').html('<p style="color:green">Saved.</p>');
+        showAlert('Saved', 'success');
       }
     });
   };
 
   function showExperimentsClick(e) {
-    e.preventDefault();
+    //e.preventDefault();
     $('#show-experiments').off('click', showExperimentsClick);
     getExperiments(showExperiments);
   };
 
+  if (window.location.hash.length) {
+    var hash = window.location.hash.substr(1).split('/');
+    if ('experiments' == hash[0]) {
+      getExperiment(hash[1], showExperiment);
+      return;
+    }
+  }
   getExperiments(showExperiments);
 
 });
