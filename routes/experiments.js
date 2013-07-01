@@ -53,6 +53,7 @@ function init(app) {
             return res.send(result);
           } else {
             return console.log(err);
+            res.send('Error', 500);
           }
         });
       }
@@ -65,6 +66,7 @@ function init(app) {
         return res.send(result);
       } else {
         return console.log(err);
+        res.send('Error', 500);
       }
     });
   });
