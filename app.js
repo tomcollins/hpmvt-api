@@ -25,22 +25,25 @@ app.configure(function(){
   app.use(express.cookieParser());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
+  app.use(express.static(__dirname + '/public'));
   app.use(app.router);
 });
 
 app.configure('development', function () {
   app.use(express.logger('dev'));
   app.use(express.errorHandler({dumpExceptions: true, showStack: true}));
-  app.use(express.static(path.join(__dirname, 'public'), { maxAge: 120 * 1000 }));
+  app.use(express.static(path.join(__dirname, 'public')));
 });
 
 app.configure('production', function () {
   app.use(express.compress());
   app.use(express.errorHandler());
-  app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.static(path.join(__dirname, 'public'), { maxAge: 120 * 1000 }));
 });
 
+
 require('./routes/projects').init(app);
+require('./routes/experiements').init(app);
 require('./routes/stats').init(app);
 
 http.createServer(app).listen(app.get('port'), function(){
