@@ -1,11 +1,11 @@
 function init(app) {
 
   var CollectionProvider = require('../lib/collectionprovider').CollectionProvider
-    , statProvider= new CollectionProvider('stats', 'localhost', 27017)
+    , trackingProvider= new CollectionProvider('tracking', 'localhost', 27017)
     , imageBinary = new Buffer('R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==', encoding='base64').toString('binary');
 
-  app.get('/stats', function(req, res){
-    statProvider.findAll( function(err, result){
+  app.get('/tracking', function(req, res){
+    trackingProvider.findAll( function(err, result){
       if (!err) {
         return res.send(result);
       } else {
@@ -49,7 +49,7 @@ function init(app) {
       res.end();
       return;
     }
-    statProvider.save(stat, function( err, result) {
+    trackingProvider.save(stat, function( err, result) {
       if (err) {
         writeResponse(500);
       } else if (null === result) {
@@ -60,8 +60,8 @@ function init(app) {
     });
   });
 
-  app.post('/stats', function(req, res){
-    statProvider.save(req.body, function( err, result) {
+  app.post('/tracking', function(req, res){
+    trackingProvider.save(req.body, function( err, result) {
       if (err) {
         res.send('Error', 500);
       } else if (null === result) {
@@ -72,8 +72,8 @@ function init(app) {
     });
   });
 
-  app.get('/stats/:id', function(req, res){
-    statProvider.findByInternalId(req.params.id, function(err, result){
+  app.get('/tracking/:id', function(req, res){
+    trackingProvider.findByInternalId(req.params.id, function(err, result){
       if (err) {
         res.send('Error', 500);
       } else if (null === result) {
@@ -84,8 +84,8 @@ function init(app) {
     });
   });
 
-  app.put('/stats/:id', function(req, res){
-    statProvider.updateByInternalId(req.params.id, req.body, function(err, result){
+  app.put('/tracking/:id', function(req, res){
+    trackingProvider.updateByInternalId(req.params.id, req.body, function(err, result){
       if (!err) {
         return res.send(result);
       } else {
@@ -95,8 +95,8 @@ function init(app) {
     });
   });
 
-  app.delete('/stats/:id', function(req, res){
-    statProvider.remove(req.params.id, function( err, result) {
+  app.delete('/tracking/:id', function(req, res){
+    trackingProvider.remove(req.params.id, function( err, result) {
       res.send(req.param.id +' has been deleted.');
     });
   });

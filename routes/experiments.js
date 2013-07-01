@@ -2,7 +2,7 @@ function init(app) {
 
   var CollectionProvider = require('../lib/collectionprovider').CollectionProvider;
   var experimentProvider= new CollectionProvider('experiments', 'localhost', 27017);
-  var statProvider= new CollectionProvider('stats', 'localhost', 27017);
+  var statProvider= new CollectionProvider('tracking', 'localhost', 27017);
 
   app.get('/experiments', function(req, res){
     experimentProvider.findAll( function(err, result){
@@ -60,8 +60,6 @@ function init(app) {
   });
 
   app.put('/experiments/:id', function(req, res){
-    console.log('id', req.params.id);
-    console.log('req.body', req.body);
     experimentProvider.updateByInternalId(req.params.id, req.body, function(err, result){
       if (!err) {
         return res.send(result);

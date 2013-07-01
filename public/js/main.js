@@ -30,6 +30,7 @@ $(document).ready(function(){
   }
 
   function showExperiments(experiments) {
+    $(document).off("submit", "*");
     var uri
       , html = '<h2>Experiments:</h2>';
     html += '<p><a href="#" id="experiment-add">Add new experiment</a></p>';
@@ -58,6 +59,7 @@ $(document).ready(function(){
   function experimentAddClick(e) {
     //e.preventDefault();
     experiment = {
+      enabled: true,
       project: "homepage",
       name: "Add name",
       type: "",
@@ -79,7 +81,7 @@ $(document).ready(function(){
     html += '<form id="experiment-edit"><textarea wrap="off" rows="15" cols="80">' +JSON.stringify(experiment, null, 4) +'</textarea><input style="display: block;clear: both" type="submit"/></form>';
     $('#main').html(html);
     $('#show-experiments').on('click', showExperimentsClick);
-    $(document).on("submit", "#experiment-edit", saveExperiment);
+    $('#experiment-edit').on("submit", saveExperiment);
   }
 
   function saveExperiment(e) {
@@ -107,14 +109,16 @@ $(document).ready(function(){
   function showExperiment(experiment) {
     var view = [], click = [], variants = { v1: {view:0, click: 0}, v2: {view:0, click: 0}};
 
-    experiment.stats.forEach(function(experiment){
-      if ('view' == experiment.type) {
-        view.push(experiment);
-      } else if ('click' == experiment.type) {
-        click.push(experiment);
-      }
-      variants[experiment.variant][experiment.type]++;
-    });
+    if (experiment.stats) {
+      experiment.stats.forEach(function(experiment){
+        if ('view' == experiment.type) {
+          view.push(experiment);
+        } else if ('click' == experiment.type) {
+          click.push(experiment);
+        }
+        variants[experiment.variant][experiment.type]++;
+      });
+    }
 
     var html = '<a id="show-experiments" href="#">Back to experiment list</a>';
     html += '<div id="experiment">';
@@ -151,7 +155,7 @@ $(document).ready(function(){
     html += '<form id="experiment-edit"><textarea wrap="off" rows="15" cols="80">' +JSON.stringify(experiment, null, 4) +'</textarea><input style="display: block;clear: both" type="submit"/></form>';
     $('#main').html(html);
     $('#show-experiments').on('click', showExperimentsClick);
-    $(document).on("submit", "#experiment-edit", updateExperiment);
+    $('#experiment-edit').on("submit", updateExperiment);
   }
 
   function updateExperiment(e) {
