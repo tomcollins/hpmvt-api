@@ -33,12 +33,13 @@ $(document).ready(function(){
     var uri
       , html = '<h2>Experiments:</h2>';
     html += '<p><a href="#" id="experiment-add">Add new experiment</a></p>';
-    html += '<table id="experiments" cellpadding="0" cellspacing="0"><tr><th>Project</th><th>Name</th></tr>';
+    html += '<table id="experiments" cellpadding="0" cellspacing="0"><tr><th>Name</th><th>Enabled</th><th>Project</th></tr>';
     experiments.forEach(function(experiment){
       uri = '/experiments/' +experiment._id;
       html += '<tr>';
-      html += '<td>' +experiment.project +'</td>';
       html += '<td><a href="#experiments/' +experiment._id +'">' +experiment.name +'</a></td>';
+      html += '<td>' +(experiment.enabled ? 'Yes' : 'No') +'</td>';
+      html += '<td>' +experiment.project +'</td>';
       html += '</tr>';
     });
     html += '</table>';

@@ -43,7 +43,7 @@ app.configure('production', function () {
 
 
 require('./routes/projects').init(app);
-require('./routes/experiements').init(app);
+require('./routes/experiments').init(app);
 require('./routes/stats').init(app);
 
 http.createServer(app).listen(app.get('port'), function(){

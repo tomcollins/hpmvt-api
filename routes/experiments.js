@@ -17,7 +17,7 @@ function init(app) {
   app.get('/experiments/project/:id', function(req, res){
     var options = {project: req.params.id};
     if (req.query.enabled) {
-      options.enabled = req.query.enabled;
+      options.enabled = Boolean(req.query.enabled);
     }
     experimentProvider.findByObject(options, function(err, result){
       if (!err) {
@@ -35,7 +35,6 @@ function init(app) {
       } else if (null === result) {
         res.send('Not Found', 404);
       } else {
-        console.log('result', result);
         res.redirect('/experiments/' +result[0]._id)
       }
     });
