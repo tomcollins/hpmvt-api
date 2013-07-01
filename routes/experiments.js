@@ -61,9 +61,14 @@ function init(app) {
   });
 
   app.put('/experiments/:id', function(req, res){
+    if (!'object' == typeof req.body || !req.body._id) {
+      res.send('Bad Request', 400);
+      return;
+    }
     experimentProvider.updateByInternalId(req.params.id, req.body, function(err, result){
       if (!err) {
-        return res.send(result);
+        res.send(req.body);
+        res.end();
       } else {
         return console.log(err);
         res.send('Error', 500);
