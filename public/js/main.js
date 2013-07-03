@@ -197,9 +197,11 @@ $(document).ready(function(){
   function showExperiment(experiment) {
     var view = [], click = [], variants = [];
 
-    experiment.variants.forEach(function(variant) {
-      variants.push({view:0,click:0});
-    });
+    if (experiment.variants) {
+      experiment.variants.forEach(function(variant) {
+        variants.push({view:0,click:0});
+      });
+    }
 
     var minTime = null;
     var maxTime = null;
@@ -219,7 +221,6 @@ $(document).ready(function(){
         variants[stat.variant][stat.type]++;
       });
     }
-console.log(minTime, maxTime);
     //duration = maxTime - minTime;
     //minutes = Math.ceil(duration/60);
     //hours = Math.ceil(minutes/60); 
@@ -228,29 +229,33 @@ console.log(minTime, maxTime);
     html += '<div id="experiment">';
     html += '<h2>' +experiment.name +'</h2>';
 
-    html += getVariantsTable(experiment.variants, variants);
+    if (experiment.variants) {
+      html += getVariantsTable(experiment.variants, variants);
 
-    html += '<h3>Views: ' +view.length +'</h3>';
-    html += '<ul>';
-    view.forEach(function(view){
-      html += '<li>' +view.variant +' - ' +view.created_at +'</li>';
-    });
-    html += '</ul>';
-    html += '<h3>Clicks: ' +click.length +'</h3>';
-    html += '<ul>';
-    click.forEach(function(click){
-      html += '<li>' +click.variant +' - ' +click.created_at +'</li>';
-    });
-    html += '</ul>';
+      html += '<h3>Views: ' +view.length +'</h3>';
+      html += '<ul>';
+      view.forEach(function(view){
+        html += '<li>' +view.variant +' - ' +view.created_at +'</li>';
+      });
+      html += '</ul>';
+      html += '<h3>Clicks: ' +click.length +'</h3>';
+      html += '<ul>';
+      click.forEach(function(click){
+        html += '<li>' +click.variant +' - ' +click.created_at +'</li>';
+      });
+      html += '</ul>';
 
-    graphData = getGraphData(experiment.stats, minTime, maxTime);
+      graphData = getGraphData(experiment.stats, minTime, maxTime);
+    }
 
     delete experiment.stats;
     html += '<h3>Edit config:</h3>';
     html += '<form id="experiment-edit"><textarea wrap="off" rows="15" cols="80">' +JSON.stringify(experiment, null, 4) +'</textarea><input style="display: block;clear: both" type="submit"/></form>';
     $('#main').html(html);
 
-    addGraph(graphData);
+    if (experiment.variants) {
+      addGraph(graphData);
+    }
 
     $('#show-experiments').on('click', showExperimentsClick);
     $('#experiment-edit').on("submit", updateExperiment);
