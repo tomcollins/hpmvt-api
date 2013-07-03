@@ -62,12 +62,13 @@ $(document).ready(function(){
       enabled: true,
       project: "homepage",
       name: "Add name",
-      type: "",
-      selector: "",
-      values: {
-        "v1": "",
-        "v2": ""
-      },
+      variants: [{
+        "name": "Variant 1",
+        "css": "p{color: red}",
+        "jquery": {
+          "server": "$(\"body\").append(\"Added using \\\"jquery\\\")"
+        }
+      }],
       tracking: [
         {
           "type": "click",
@@ -106,36 +107,128 @@ $(document).ready(function(){
     });
   };
 
-  function showExperiment(experiment) {
-    var view = [], click = [], variants = { v1: {view:0, click: 0}, v2: {view:0, click: 0}};
+  function getGraphData(stats, startTime, stopTime) {
+    var views = []
+      , clicks = []
+      , xSeries = []
+      , xValues = []
+      , timeStep = (stopTime - startTime) / 20
+      , date;
+    for (var step = 0; step <= 20; step++) {
+      views.push(0);
+      clicks.push(0);
+      date = new Date(Math.floor(startTime + (step * timeStep)));
+      xValues.push((date.getMonth()+1) +'/' +date.getDate() +' ' +date.getHours() +':' +date.getMinutes() +':' +date.getSeconds());
+      xSeries.push(date.getTime());
+    };
+    stats.forEach(function(stat){
+      var step = Math.floor((stat.time-startTime)/timeStep);
+      if ('view' == stat.type) {
+        views[step]++;
+      } else if ('click' == stat.type) {
+        clicks[step]++;
+      }
+    });
+    return {
+      start: startTime,
+      stop: stopTime,
+      timeStep: timeStep,
+      xValues: xValues,
+      xSeries: xSeries,
+      views: views,
+      clicks: clicks
+    }
+  };
 
-    if (experiment.stats) {
-      experiment.stats.forEach(function(experiment){
-        if ('view' == experiment.type) {
-          view.push(experiment);
-        } else if ('click' == experiment.type) {
-          click.push(experiment);
+  function addGraph(data) {
+    var data = {
+      labels : graphData.xValues,
+      datasets : [
+        {
+          fillColor : "rgba(220,220,220,0.5)",
+          strokeColor : "rgba(220,220,220,1)",
+          pointColor : "rgba(220,220,220,1)",
+          pointStrokeColor : "#fff",
+          data : graphData.views
+        },
+        {
+          fillColor : "rgba(151,187,205,0.5)",
+          strokeColor : "rgba(151,187,205,1)",
+          pointColor : "rgba(151,187,205,1)",
+          pointStrokeColor : "#fff",
+          data : graphData.clicks
         }
-        variants[experiment.variant][experiment.type]++;
+      ]
+    };
+    $('#main table').after('<canvas id="chart" width="640" height="200"></canvas>');
+    new Chart($("#chart").get(0).getContext("2d")).Line(data, {
+
+    });
+  };
+
+  function getVariantsTable(variants, variantsStats) {
+    var index = 0
+      , views
+      , clicks
+      , success
+      , html = '<h3>Variants</h3>';
+    html += '<table id="variants" cellpadding="0" cellspacing="0"><tr><th>Name</th><th>Success</th><th>Views</th><th>Clicks</th></tr>';
+    variants.forEach(function(variant) {
+      views = variantsStats[index].view;
+      clicks = variantsStats[index].click;
+      if (0 === clicks) {
+        success = 0;
+      } else {
+        success = ((clicks/views)*100);
+      }      
+      if (isNaN(success)) success = 0;
+      html += '<tr>';
+      html += '<td>' +variant.name +'</td>';
+      html += '<td>' +success.toFixed(2)  +'%</td>';
+      html += '<td>' +views  +'</td>';
+      html += '<td>' +clicks +'</td>';
+      html += '</tr>';
+      index++;
+    });
+    html += '</table>';
+    return html;
+  }
+
+  function showExperiment(experiment) {
+    var view = [], click = [], variants = [];
+
+    experiment.variants.forEach(function(variant) {
+      variants.push({view:0,click:0});
+    });
+
+    var minTime = null;
+    var maxTime = null;
+    var duration, hours, minutes, xStep, yStep;
+    var viewGraphData;
+    var date;
+    if (experiment.stats) {
+      experiment.stats.forEach(function(stat){
+        stat.time = new Date(stat.created_at).getTime();
+        if (stat.time < minTime || null === minTime) minTime = stat.time;
+        if (stat.time > maxTime || null === maxTime) maxTime = stat.time;
+        if ('view' == stat.type) {
+          view.push(stat);
+        } else if ('click' == stat.type) {
+          click.push(stat);
+        }
+        variants[stat.variant][stat.type]++;
       });
     }
+console.log(minTime, maxTime);
+    //duration = maxTime - minTime;
+    //minutes = Math.ceil(duration/60);
+    //hours = Math.ceil(minutes/60); 
 
     var html = '<a id="show-experiments" href="#">Back to experiment list</a>';
     html += '<div id="experiment">';
     html += '<h2>' +experiment.name +'</h2>';
-    html += '<p>Type:' +experiment.type +'</p>';
 
-    html += '<h3>Variants</h3>';
-    html += '<table id="variants" cellpadding="0" cellspacing="0"><tr><th>Key</th><th>Value</th><th>Views</th><th>Clicks</th></tr>';
-    for (var key in experiment.values) {
-      html += '<tr>';
-      html += '<td>' +key +'</td>';
-      html += '<td>' +experiment.values[key] +'</td>';
-      html += '<td>' +variants[key].view  +'</td>';
-      html += '<td>' +variants[key].click +'</td>';
-      html += '</tr>';
-    };
-    html += '</table>';
+    html += getVariantsTable(experiment.variants, variants);
 
     html += '<h3>Views: ' +view.length +'</h3>';
     html += '<ul>';
@@ -150,10 +243,15 @@ $(document).ready(function(){
     });
     html += '</ul>';
 
+    graphData = getGraphData(experiment.stats, minTime, maxTime);
+
     delete experiment.stats;
     html += '<h3>Edit config:</h3>';
     html += '<form id="experiment-edit"><textarea wrap="off" rows="15" cols="80">' +JSON.stringify(experiment, null, 4) +'</textarea><input style="display: block;clear: both" type="submit"/></form>';
     $('#main').html(html);
+
+    addGraph(graphData);
+
     $('#show-experiments').on('click', showExperimentsClick);
     $('#experiment-edit').on("submit", updateExperiment);
   }

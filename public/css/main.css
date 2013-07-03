@@ -35,3 +35,7 @@ p.alert.success {
 p.alert.error {
   background: red;
 }
+
+canvas {
+  margin: 20px 0 10px 0;
+}
