@@ -210,15 +210,19 @@ $(document).ready(function(){
     var date;
     if (experiment.stats) {
       experiment.stats.forEach(function(stat){
-        stat.time = new Date(stat.created_at).getTime();
-        if (stat.time < minTime || null === minTime) minTime = stat.time;
-        if (stat.time > maxTime || null === maxTime) maxTime = stat.time;
-        if ('view' == stat.type) {
-          view.push(stat);
-        } else if ('click' == stat.type) {
-          click.push(stat);
+        if (stat.variant < experiment.variants.length) {
+          stat.time = new Date(stat.created_at).getTime();
+          if (stat.time < minTime || null === minTime) minTime = stat.time;
+          if (stat.time > maxTime || null === maxTime) maxTime = stat.time;
+          if ('view' == stat.type) {
+            view.push(stat);
+          } else if ('click' == stat.type) {
+            click.push(stat);
+          }
+          if (variants[stat.variant] && variants[stat.variant][stat.type]) {
+            variants[stat.variant][stat.type]++;
+          }
         }
-        variants[stat.variant][stat.type]++;
       });
     }
     //duration = maxTime - minTime;
