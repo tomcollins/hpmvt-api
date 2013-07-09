@@ -1,0 +1,31 @@
+/* Overrides */
+
+.table-hover tbody tr:hover>th {
+  background-color: #f9f9f9;
+}
+.table-hover tbody tr:hover>td {
+  background-color:#FAF9D9;
+}
+
+
+form input.ng-invalid.ng-dirty {
+  background-color: #F2D8DE;
+}
+form input.ng-valid.ng-dirty {
+  background-color: #D8F2D8;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+textarea {
+  width: 660px;
+}
+
+/* Custom elements */
+
+
+.col-controls .btns {
+  margin-bottom: 9px;
+}

@@ -1,0 +1,48 @@
+<div class="container-fluid">
+
+  <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
+
+  <div class="row-fluid">
+
+    <div class="span2 col-controls">
+
+      <div class="btns">
+        <a href="#/experiments/add" class="btn btn-primary">Create Experiment</a>
+      </div>
+
+      Search: <input ng-model="query">
+      Sort by:
+      <select ng-model="orderProp">
+        <option value="name">Alphabetical</option>
+        <option value="created_at">Created</option>
+        <option value="modified_at">Modified</option>
+        <option value="_id">Id</option>
+      </select>
+ 
+    </div>
+
+    <div class="span1"></div>
+
+    <div class="span9">
+ 
+       <table class="table table-striped table-bordered table-hover">
+        <tr>
+          <th>Name</th>
+          <th>Enabled</th>
+          <th>Project</th>
+          <th>Created</th>
+        </tr>
+        <tr ng-repeat="experiment in experiments | filter:query | orderBy:orderProp" class="">
+          <td><a href="#/experiments/{{experiment._id}}/edit">{{experiment.name}}</a></td>
+          <td>{{experiment.enabled}}</td>
+          <td>{{experiment.project}}</td>
+          <td>{{experiment.created_at | date:'medium'}}</td>
+        </tr>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+
+

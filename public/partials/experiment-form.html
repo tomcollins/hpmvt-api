@@ -1,0 +1,75 @@
+<form novalidate class="form-horizontal">
+
+  <div ng-show="editMode">
+
+    <div class="control-group">
+      <label class="control-label" for="">Id</label>
+      <div class="controls">
+        <input type="text" disabled value="{{experiment._id}}">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="">Created</label>
+      <div class="controls">
+        <input type="text" disabled value="{{experiment.created_at | date:'medium'}}">
+      </div>
+    </div>
+
+    <div ng-hide="firstEdit" class="control-group">
+      <label class="control-label" for="">Modified</label>
+      <div class="controls">
+        <input type="text" disabled value="{{experiment.modified_at | date:'medium'}}">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="">Enabled</label>
+      <div class="controls">
+        <input type="checkbox" ng-model="experiment.enabled" required>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="">Name</label>
+    <div class="controls">
+      <input type="text" placeholder="Experiment name" ng-model="experiment.name" required>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="">Project ID</label>
+    <div class="controls">
+      <input type="text" placeholder="Project ID" ng-model="experiment.project" required>
+    </div>
+  </div>
+
+  <div class="control-group" ng-show="editMode">
+    <label class="control-label" for="">Variants</label>
+    <div class="controls">
+      <textarea rows="12" ng-model="experiment.variantsString"></textarea>
+    </div>
+  </div>
+
+  <div class="control-group" ng-show="editMode">
+    <label class="control-label" for="">Tracking</label>
+    <div class="controls">
+      <textarea rows="6" ng-model="experiment.trackingString"></textarea>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="controls">
+      <button type="submit" class="btn btn-primary" ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Save changes</button>
+      <button  ng-show="editMode" type="submit" class="btn btn-danger" ng-click="delete()">Delete Experiment</button>
+    </div>
+  </div>
+
+    <!-- 
+      http://docs.angularjs.org/guide/forms
+      <div contentEditable="true">table> 
+    -->
+
+</form>
