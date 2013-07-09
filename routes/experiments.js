@@ -126,7 +126,7 @@ function processReport(experiment, stats) {
     stat.time = time;
     if (time < startTime || null === startTime) startTime = time;
     if (time > finishTime || null === finishTime) finishTime = time;
-    if (stat.variant) {
+    if (stat.variant && variants[stat.variant]) {
       if ('view' === stat.type) {
         variants[stat.variant].views++;
       } else if ('click' === stat.type) {

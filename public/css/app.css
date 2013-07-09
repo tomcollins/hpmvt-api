@@ -23,8 +23,11 @@ textarea {
   width: 660px;
 }
 
-/* Custom elements */
+ul.nav-tabs a {
+  cursor: pointer;
+}
 
+/* Custom elements */
 
 .col-controls .btns {
   margin-bottom: 9px;
