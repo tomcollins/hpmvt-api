@@ -39,6 +39,17 @@ function init(app) {
     });
   });
 
+  app.get('/projects/id/:id', function(req, res){
+    var options = {id: req.params.id};
+    projectProvider.findByObject(options, function(err, result){
+      if (!err) {
+        return res.send(result);
+      } else {
+        return console.log(err);
+      }
+    });
+  });
+
   app.put('/projects/:id', function(req, res){
     projectProvider.updateByInternalId(req.params.id, req.body, function(err, result){
       if (!err) {
