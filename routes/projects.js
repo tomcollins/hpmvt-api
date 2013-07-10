@@ -43,7 +43,7 @@ function init(app) {
     var options = {id: req.params.id};
     projectProvider.findByObject(options, function(err, result){
       if (!err) {
-        return res.send(result);
+        return res.send(result[0]);
       } else {
         return console.log(err);
       }
