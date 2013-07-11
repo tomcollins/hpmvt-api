@@ -1,0 +1,91 @@
+<div class="container-fluid">
+
+  <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
+
+<form novalidate class="form-horizontal" name="experimentForm">
+
+  <div ng-show="editMode">
+
+    <div class="control-group">
+      <label class="control-label" for="">_Id</label>
+      <div class="controls">
+        <input type="text" disabled value="{{project._id}}">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="">Created</label>
+      <div class="controls">
+        <input type="text" disabled value="{{project.created_at | date:'medium'}}">
+      </div>
+    </div>
+
+    <div ng-hide="firstEdit" class="control-group">
+      <label class="control-label" for="">Modified</label>
+      <div class="controls">
+        <input type="text" disabled value="{{project.modified_at | date:'medium'}}">
+      </div>
+    </div>
+
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="">Id</label>
+    <div class="controls">
+      <input type="text" disabled value="{{project.id}}" required>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="">Name</label>
+    <div class="controls">
+      <input type="text" placeholder="Experiment name" ng-model="project.name" required>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="">Protocol</label>
+    <div class="controls">
+      <input type="text" placeholder="http" ng-model="project.protocol" required>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="">Host</label>
+    <div class="controls">
+      <input type="text" placeholder="www.bbc.co.uk" ng-model="project.host" required>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="">Path</label>
+    <div class="controls">
+      <input type="text" placeholder="/" ng-model="project.path" required>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="">Variant Rule</label>
+    <div class="controls">
+      <textarea rows="6" ng-model="project.variantRule"></textarea>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="controls">
+      <button type="submit" class="btn btn-primary" ng-click="save()" ng-disabled="experimentForm.$invalid || isUnchanged(experiment)">Save changes</button>
+      <button  ng-show="editMode" type="submit" class="btn btn-danger" ng-click="delete()">Delete Project</button>
+    </div>
+  </div>
+
+    <!-- 
+      http://docs.angularjs.org/guide/forms
+      <div contentEditable="true">table> 
+    -->
+
+</form>
+
+</div>
+
+
+

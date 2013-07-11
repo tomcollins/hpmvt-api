@@ -103,6 +103,66 @@ angular.module('mvtApp.controllers', ['ui.bootstrap']).
     $scope.closeAlert = function(index) {
       $scope.alerts.splice(index, 1);
     };
+  }]).
+
+  controller('ProjectListCtrl', ['$scope', '$routeParams', 'Project', function($scope, $routeParams, Project) {
+    $scope.projects = Project.query();
+
+    // ui
+
+    $scope.alerts = [];
+    if ('deleted' == $routeParams.action) {
+      $scope.alerts.push({type: 'info', msg: 'Project has been deleted.' });
+    };
+    $scope.closeAlert = function(index) {
+      $scope.alerts.splice(index, 1);
+    };
+  }]).
+
+  controller('ProjectCreateCtrl', ['$scope', '$location', '$routeParams', 'Project', function($scope, $location, $routeParams, Project) {
+    $scope.action = 'create';
+    $scope.editMode = false;
+    $scope.editTabLabel = 'Add Project';
+    $scope.project = new Project();
+    $scope.save = function() {
+      Project.create($scope.project, function(data) {
+        $location.path('/project/' +data._id +'/new');
+      });
+    }
+  }]).
+
+  controller('ProjectDetailCtrl', ['$scope', '$location', '$routeParams', 'Project', function($scope, $location, $routeParams, Project) {
+    $scope.action = $routeParams.action;
+    $scope.editMode = true;
+    $scope.editTabLabel = 'Edit Project';
+    $scope.firstEdit = 'new' === $routeParams.action;
+    $scope.project = Project.get({projectId: $routeParams.projectId}, function(project) {
+    });
+    $scope.save = function() {
+      Project.update($scope.project, function(data) {
+        if ($scope.firstEdit) {
+          $scope.closeAlert(0);
+          $scope.firstEdit = false;
+        }
+        $scope.alerts.push({type: 'success', msg: 'Your project has been saved.' });
+      });
+    };
+
+    $scope.delete = function() {
+      Project.delete({projectId: $scope.project._id}, function(data) {
+        $location.path('/projects/deleted');
+      });
+    };
+
+    // ui
+
+    $scope.alerts = [];
+    if ($scope.firstEdit) {
+      $scope.alerts.push({type: 'success', msg: 'Your project has been created.' });
+    };
+    $scope.closeAlert = function(index) {
+      $scope.alerts.splice(index, 1);
+    };
   }]);
 
 
