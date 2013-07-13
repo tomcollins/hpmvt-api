@@ -1,13 +1,6 @@
 'use strict';
 
 angular.module('mvtApp', ['mvtApp.services', 'mvtApp.controllers']).
-
-  /*
-  config(['$locationProvider', function($locationProvider) {
-    $locationProvider.html5Mode(true);
-  }]).
-*/
-
   config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/experiments', {
       templateUrl: 'partials/experiment-list.html', 

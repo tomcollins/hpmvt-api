@@ -137,9 +137,13 @@ angular.module('mvtApp.controllers', ['ui.bootstrap']).
     $scope.editTabLabel = 'Edit Project';
     $scope.firstEdit = 'new' === $routeParams.action;
     $scope.project = Project.get({projectId: $routeParams.projectId}, function(project) {
+      $scope.project.routesString = JSON.stringify($scope.project.routes, null, 4);
     });
     $scope.save = function() {
-      Project.update($scope.project, function(data) {
+      var project = angular.copy($scope.project);
+      project.routes = JSON.parse($scope.project.routesString);
+      delete project.routesString;
+      Project.update(project, function(data) {
         if ($scope.firstEdit) {
           $scope.closeAlert(0);
           $scope.firstEdit = false;
