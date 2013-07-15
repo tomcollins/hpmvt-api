@@ -45,6 +45,8 @@ app.configure('production', function () {
 require('./routes/projects').init(app);
 require('./routes/experiments').init(app);
 require('./routes/tracking').init(app);
+require('./routes/impressions').init(app);
+require('./routes/users').init(app);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Server listening on port " + app.get('port'));
