@@ -18,6 +18,14 @@ environment = process.env.NODE_ENV;
 
 // create express app
 
+//CORS middleware
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+}
+
 app = express();
 
 app.configure(function(){
@@ -25,6 +33,7 @@ app.configure(function(){
   app.use(express.cookieParser());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
+  app.use(allowCrossDomain);
   app.use(express.static(__dirname + '/public'));
   app.use(app.router);
 });
@@ -47,6 +56,7 @@ require('./routes/experiments').init(app);
 require('./routes/tracking').init(app);
 require('./routes/impressions').init(app);
 require('./routes/users').init(app);
+require('./routes/articles').init(app);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Server listening on port " + app.get('port'));
